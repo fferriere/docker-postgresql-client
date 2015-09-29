@@ -15,4 +15,4 @@ if [ -n "$FFERRIERE_PG_CLIENT_DOCKER_ARGS" ]; then
 fi
 
 docker run $DOCKER_ARGS \
-  $IMAGE psql $@
+  $IMAGE pg_dump $@

@@ -49,3 +49,45 @@ $ ./psql-postgres.sql < ~/file.sql
 or
 $ echo "CREATE USER user WITH SUPERUSER PASSWORD 'password'" | ./psql-postgres.sql
 ```
+
+## Dump
+
+You can call a dump creation with `pg_dump.sh`.
+
+```
+$ ./pg_dump.sh -h db.lan -U user -d dbname -W
+Password:
+```
+
+## Docker arguments
+
+You might want to add a docker arguments for change user or bind a file|directory.
+
+You can use the `FFERRIERE_PG_CLIENT_DOCKER_ARGS` variable to add options at docker run.
+
+`FFERRIERE_PG_CLIENT_DOCKER_ARGS` is usable on `psql.sh` and `pg_dump.sh` scipts.
+
+Exemple, automate dump :
+```
+$ cat dump.sh
+#!/bin/bash
+
+host='db.lan'
+port='5432'
+database='dbname'
+username='user'
+password='secret'
+
+tmpfile="my_path/.tmp.pgpass"
+
+echo "$host:$port:$database:$username:$password" > $tmpfile
+chmod 400 $tmpfile
+FFERRIERE_PG_CLIENT_DOCKER_ARGS="-u user -v $tmpfile:/home/user/.pgpass" \
+    FFERRIERE_PG_SERVER_NAME="prefix-pg-server" \
+    ./pg_dump.sh -h $host --port $port -U $username -d $database \
+    --format tar --blobs --inserts --verbose | gzip > ~/backup.tar.gz
+rm -f $tmpfile
+```
+
+With this script we can write a `.pgpass` file for save password
+and permit to dump a database secure by password without interactive step.
