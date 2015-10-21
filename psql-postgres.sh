@@ -16,7 +16,7 @@ if [ "$NB_ROWS" -eq 0 ]; then
     exit 1
 fi
 
-DOCKER_ARGS='--rm -i';
+DOCKER_ARGS='--rm -i -u postgres';
 if [ -t 0 ]; then
     DOCKER_ARGS="$DOCKER_ARGS -t"
 fi
